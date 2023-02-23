@@ -1,7 +1,7 @@
 import re
 from collections import UserDict
 import json
-from datetime import datetime, date
+from datetime import datetime
 from prettytable import PrettyTable
 
 
@@ -166,38 +166,45 @@ class AddressBook(UserDict):
 
     def search(self, search_string):
         results = AddressBook()
-        for page in self:
-            for entry in page:
-                if (
-                    search_string in entry.name.value
-                    or (
-                        entry.birthday.value is not None
-                        and search_string in entry.birthday.value
-                    )
-                    or any(
-                        search_string in phone.value for phone in entry.phones
-                    )
-                ):
-                    results.add_record(entry)
+        for key in self.data:
+            record = self.data[key]
+            if (
+                search_string in record.name.value
+                or (
+                    record.birthday.value is not None
+                    and search_string in record.birthday.value
+                )
+                or any(search_string in phone.value for phone in record.phones)
+            ):
+                results.add_record(record)
         return results
 
-    def __iter__(self):
-        self.index = 0
-        self.page_size = 10  # количество записей на странице
-        return self
+    def iterator(self, page_size: int = 10):
 
-    def __next__(self):
-        if self.index >= len(self.data):
-            raise StopIteration
-
-        page_entries = []
-        for key, value in list(self.data.items())[
-            self.index : self.index + self.page_size
-        ]:
-            page_entries.append(value)
-        self.index += self.page_size
-
-        return page_entries
+        table = PrettyTable()
+        table.field_names = ["Name", "Birthday", "Phones"]
+        table.min_width.update({"Name": 20, "Birthday": 12, "Phones": 40})
+        for i, key in enumerate(self.data, 1):
+            record = self.data[key]
+            name = record.name.value
+            birthday = (
+                record.birthday.value
+                if record.birthday is not None and record.birthday.value
+                else "-"
+            )
+            phones = (
+                ", ".join(phone.value for phone in record.phones)
+                if record.phones
+                else "-"
+            )
+            table.add_row([name, birthday, phones])
+            if i % page_size == 0 or i == len(self.data):
+                yield table
+                if i != len(self.data):
+                    input("Press <Enter> to continue...")
+                table.clear_rows()
+        if table._rows:
+            yield table
 
 
 # ================================= Decorator ================================#
@@ -286,8 +293,7 @@ def add(*args):
     if not args[1]:
         raise ValueError("The phone number must be 10 digits")
 
-    name = Name(args[0])
-    phone = Phone(args[1])
+    name, phone = Name(args[0]), Phone(args[1])
     record = Record(name)
     record.add_phone(phone)
     contacts.add_record(record)
@@ -295,24 +301,20 @@ def add(*args):
     return f"I added a phone {args[1]} to contact {args[0]}"
 
 
-@input_error
+# @input_error
 def phones(*args):
     """Функція-handler показує телефонні номери відповідного контакту."""
 
     table = PrettyTable()
     table.field_names = ["Name", "Phones"]
-    table.min_width["Name"] = 20
-    table.min_width["Phones"] = 40
+    table.min_width.update({"Name": 20, "Phones": 55})
 
     if not args[0]:
         raise KeyError
 
     name = Name(args[0])
-
     phones = Record(name).phones
-
     phones = ", ".join(phone.value for phone in phones)
-
     table.add_row([name.value, phones])
 
     return table
@@ -324,9 +326,9 @@ def birthday(*args):
 
     table = PrettyTable()
     table.field_names = ["Name", "Birthday", "Days to next Birthday"]
-    table.min_width["Name"] = 20
-    table.min_width["Birthday"] = 12
-    table.min_width["Days to next Birthday"] = 5
+    table.min_width.update(
+        {"Name": 20, "Birthday": 12, "Days to next Birthday": 40}
+    )
 
     if not args[0]:
         raise KeyError
@@ -403,7 +405,7 @@ COMMANDS = {
     "birthday of": birthday,
     "add": add,
     "change": change,
-    "phones": phones,
+    "phones of": phones,
     "show all": show_all,
     "remove": remove,
     "good bye": good_bye,
@@ -427,9 +429,7 @@ def main():
 
     table = PrettyTable()
     table.field_names = ["Name", "Birthday", "Phones"]
-    table.min_width["Name"] = 20
-    table.min_width["Birthday"] = 12
-    table.min_width["Phones"] = 40
+    table.min_width.update({"Name": 20, "Birthday": 12, "Phones": 40})
 
     command_pattern = "|".join(COMMANDS.keys())
     pattern = re.compile(
@@ -468,29 +468,20 @@ def main():
             contacts.save_contacts("contacts")
             return
         if params[0] in ("show all", "search"):
+            param = (
+                int(params[1])
+                if params[1] is not None
+                and isinstance(params[1], str)
+                and params[1].isdigit()
+                else 10
+            )
             if params[0] == "show all":
                 entry = contacts
             elif params[0] == "search":
                 entry = contacts.search(params[1])
-            num_pages = len(list(entry))
-            for i, page in enumerate(entry):
-                for entry in page:
-                    name = entry.name.value
-                    birthday = (
-                        entry.birthday.value
-                        if entry.birthday is not None and entry.birthday.value
-                        else "-"
-                    )
-                    phones = (
-                        ", ".join([phone.value for phone in entry.phones])
-                        if entry.phones
-                        else "-"
-                    )
-                    table.add_row([name, birthday, phones])
-                print(table)
-                if i < num_pages - 1:
-                    input("Press enter to continue...")
-                table.clear_rows()
+            for tab in entry.iterator(param):
+                print(tab)
+
         print(response)
         if response == "Good bye!":
             return
