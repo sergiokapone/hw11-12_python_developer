@@ -323,9 +323,9 @@ def birthday(*args):
     """Функція-handler показує день народження та кількість днів до наступного."""
 
     table = PrettyTable()
-    table.field_names = ["Name", "Phones", "Days to next Birthday"]
+    table.field_names = ["Name", "Birthday", "Days to next Birthday"]
     table.min_width["Name"] = 20
-    table.min_width["Birthday"] = 40
+    table.min_width["Birthday"] = 12
     table.min_width["Days to next Birthday"] = 5
 
     if not args[0]:
@@ -335,11 +335,15 @@ def birthday(*args):
 
     birthday = Record(name).birthday
 
-    days_to_next_birthday = Record(name).days_to_birthday()
+    if birthday:
 
-    table.add_row([name.value, birthday.value, days_to_next_birthday])
+        days_to_next_birthday = Record(name).days_to_birthday()
 
-    return table
+        table.add_row([name.value, birthday.value, days_to_next_birthday])
+
+        return table
+
+    return "No such contach founded"
 
 
 def search(*args):
