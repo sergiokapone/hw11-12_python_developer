@@ -110,14 +110,13 @@ class Record:
     def remove_phone(self, phone: Phone):
         """Метод видаляє об'єкт телефон із запису."""
 
-        self.phones.remove(phone.value)
+        self.phones.remove(phone)
 
     def change_phone(self, old_phone: Phone, new_phone: Phone) -> bool:
         """Метод змінює об'єкт телефон в записі на новий."""
 
-        phones_list_str = (phone.value for phone in self.phones)
-        if old_phone.value in phones_list_str:
-            idx = phones_list_str.index(old_phone.value)
+        if old_phone.value in self.phones:
+            idx = self.phones.index(old_phone)
             self.phones[idx] = new_phone
             return True
         return False
@@ -127,11 +126,14 @@ class Record:
 
         if not self.birthday:
             return None
+
         today = datetime.today()
         dt_birthday = datetime.strptime(self.birthday.value, "%d.%m.%Y")
         next_birthday = dt_birthday.replace(year=today.year)
+
         if next_birthday < today:
             next_birthday = dt_birthday.replace(year=today.year + 1)
+
         return (next_birthday - today).days
 
 
@@ -190,9 +192,10 @@ class AddressBook(UserDict):
     def iterator(self, n: int):
         """Метод ітерується по записам і виводить їх частинами по n-штук."""
 
-        data_keys = list(self.data.keys())
-        for i in range(0, len(data_keys), n):
-            data_slice = {key: self.data[key] for key in data_keys[i : i + n]}
+        data_items = list(self.data.items())
+        for i in range(0, len(data_items), n):
+            data_slice = dict(data_items[i: i + n])
             yield data_slice
-            if i + n < len(data_keys):
-                input("Press <Enter> to continue...")
+            if i + n < len(data_items):
+                yield "continue"
+                

@@ -1,6 +1,6 @@
 import re
 from prettytable import PrettyTable
-from botlogik import Name, Phone, Birthday, Record, AddressBook
+from botmodule import Name, Phone, Birthday, Record, AddressBook
 
 # ============================ Tables decoration =============================#
 
@@ -25,6 +25,7 @@ def build_table(data):
         )
         table.add_row([name, birthday, phones])
     return table
+
 
 # ================================= Decorator ================================#
 
@@ -299,7 +300,10 @@ def main():
             elif params[0] == "search":
                 entry = contacts.search(params[1])
             for tab in entry.iterator(param):
-                print(build_table(tab))
+                if tab == "continue":
+                    input("Press <Enter> to continue...")
+                else:
+                    print(build_table(tab))
 
         print(response)
         if response == "Good bye!":

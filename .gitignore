@@ -1,5 +1,6 @@
 _minted-code/
-*.aux
+__pycache__/
+archives/
 *.gz
 *.log
 *.out
