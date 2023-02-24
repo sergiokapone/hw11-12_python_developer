@@ -1,8 +1,9 @@
 import re
 from collections import UserDict
+
 import json
 from datetime import datetime
-from prettytable import PrettyTable
+
 
 # ================================== Classes =================================#
 
@@ -186,14 +187,12 @@ class AddressBook(UserDict):
                 results.add_record(record)
         return results
 
-    def iterator(self, page_size: int = 10):
-        """Метод ітерується по записам і виводить їх частинами по N-штук."""
+    def iterator(self, n: int):
+        """Метод ітерується по записам і виводить їх частинами по n-штук."""
 
         data_keys = list(self.data.keys())
-        for i in range(0, len(data_keys), page_size):
-            data_slice = {
-                key: self.data[key] for key in data_keys[i: i + page_size]
-            }
+        for i in range(0, len(data_keys), n):
+            data_slice = {key: self.data[key] for key in data_keys[i : i + n]}
             yield data_slice
-            if i + page_size < len(data_keys):
+            if i + n < len(data_keys):
                 input("Press <Enter> to continue...")

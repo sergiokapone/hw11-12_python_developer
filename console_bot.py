@@ -2,6 +2,8 @@ import re
 from prettytable import PrettyTable
 from botlogik import Name, Phone, Birthday, Record, AddressBook
 
+# ============================ Tables decoration =============================#
+
 
 def build_table(data):
     """Функция строит PrettyTable для заданного списка записей."""
@@ -23,17 +25,6 @@ def build_table(data):
         )
         table.add_row([name, birthday, phones])
     return table
-
-# def build_table(header: list[str], data: list[tuple[any, ...]]) -> PrettyTable:
-#     """Функция строит PrettyTable для заданных заголовков и данных."""
-
-#     table = PrettyTable()
-#     table.field_names = header
-#     widths = {col: max(len(str(row[i])) for row in data) for i, col in enumerate(header)}
-#     table.min_width.update(widths)
-#     for row in data:
-#         table.add_row(row)
-#     return table
 
 # ================================= Decorator ================================#
 
@@ -86,7 +77,7 @@ def save(*args):
     return f"File {args[0]} saved"
 
 
-# @input_error
+@input_error
 def load(*args):
     contacts.load_contacts(args[0])
     return f"File {args[0]} loaded"
