@@ -51,19 +51,21 @@ class Phone(Field):
     """Клас -- необов'язкове поле з телефоном та таких один записів (Record)
     може містити кілька."""
 
-    def __init__(self, value: str):
-        super().__init__(value)
+    @Field.value.setter
+    def value(self, value):
         if not re.match(r"^\d{10}$", value):
             raise ValueError("Phone number must be 10 digits")
+        self.__value = value
 
 
 class Birthday(Field):
     """Клас -- необов'язкове поле з датою народження."""
 
-    def __init__(self, value: str):
-        super().__init__(value)
+    @Field.value.setter
+    def value(self, value):
         if value is not None and not re.match(r"^\d{2}\.\d{2}\.\d{4}$", value):
             raise ValueError("Birthday should be in format DD.MM.YYYY")
+        self.__value = value
 
 
 class Record:
@@ -194,8 +196,7 @@ class AddressBook(UserDict):
 
         data_items = list(self.data.items())
         for i in range(0, len(data_items), n):
-            data_slice = dict(data_items[i: i + n])
+            data_slice = dict(data_items[i : i + n])
             yield data_slice
             if i + n < len(data_items):
                 yield "continue"
-                
