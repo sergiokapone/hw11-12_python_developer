@@ -31,9 +31,6 @@ class Field:
     def value(self):
         return self.__value
 
-    def is_valid(self, value):
-        return True
-
     def __eq__(self, other):
         return self.value == other.value
 
@@ -62,11 +59,13 @@ class Birthday(Field):
 
     @Field.value.setter
     def value(self, value):
-        if not datetime.strptime(value, "%d.%m.%Y") and not re.match(
-            r"^\d{2}\.\d{2}\.\d{4}$", value
-        ):
-            raise ValueError("Birthday should be in format DD.MM.YYYY")
-        self.__value = value
+        try:
+            date = datetime.strptime(value, "%d.%m.%Y")
+        except (TypeError, ValueError):
+            raise ValueError("Invalid date format. Please use DD.MM.YYYY")
+        if date > datetime.today():
+            raise ValueError("Date cannot be in the future")
+        self.__value = date
 
 
 class Record:
@@ -108,6 +107,18 @@ class Record:
             return True
         return False
 
+    def show_phones(self):
+
+        phones = ", ".join(
+            phone.value for phone in self.phones
+        ) or '-'
+        return phones
+
+    def show_birthday(self):
+
+        birthday = getattr(self.birthday, "value", None) or '-'
+        return birthday
+
     def days_to_birthday(self) -> int:
         """Метод повертає кількість днів до наступного дня народження контакту."""
 
@@ -131,18 +142,6 @@ class AddressBook(UserDict):
         """Метод додає запис до списку контактів."""
 
         self.data[record.name.value] = record
-
-    def show_phones(self, name: Name):
-
-        phones = ", ".join(
-            phone.value for phone in self.data[name.value].phones
-        )
-        return phones
-
-    def show_birthday(self, name: Name):
-
-        birthday = getattr(self.data[name.value].birthday, "value", None)
-        return birthday
 
     def save_contacts(self, filename):
         with open(filename, "wb") as file:

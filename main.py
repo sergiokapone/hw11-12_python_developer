@@ -14,8 +14,8 @@ def build_table(data):
     for key in data:
         record = data[key]
         name = record.name.value
-        birthday = data.show_birthday(Name(key)) or "-"
-        phones = data.show_phones(Name(key)) or "-"
+        birthday = record.show_birthday()
+        phones = record.show_phones()
         table.add_row([name, birthday, phones])
     return table
 
@@ -33,11 +33,11 @@ def input_error(func):
             if "phone" in str(error):
                 return "Phone number must be 10 digits"
             elif "Birthday" in str(error):
-                return "Birthday should be in format DD.MM.YYYY"
+                return "Birthday should be in format DD.MM.YYYY and be a valid date"
             else:
                 return str(error)
-        except TypeError:
-            return "The contact has no date of birth"
+        except TypeError as error:
+            return str(error)
         except FileNotFoundError:
             return "File not found"
 
@@ -119,13 +119,13 @@ def phones(*args):
     if not args[0]:
         raise KeyError
 
-    phones = contacts.show_phones(Name(args[0])) or '-'
+    phones = contacts.show_phones(Name(args[0])) or "-"
     table.add_row([args[0], phones])
 
     return table
 
 
-@input_error
+# @input_error
 def birthday(*args):
     """Функція-handler показує день народження та кількість днів до наступного."""
 
@@ -140,8 +140,8 @@ def birthday(*args):
 
     contacts.show_birthday(Name(args[0]))
 
-    days_to_next_birthday = contacts.data[args[0]].days_to_birthday() or '-'
-    birthday = contacts.show_birthday(Name(args[0])) or '-'
+    days_to_next_birthday = contacts.data[args[0]].days_to_birthday() or "-"
+    birthday = contacts.show_birthday(Name(args[0])) or "-"
 
     table.add_row([args[0], birthday, days_to_next_birthday])
 
@@ -226,6 +226,8 @@ def get_handler(*args):
 
 # ================================ main function =============================#
 
+contacts = AddressBook()  # Global variable for storing contacts
+
 
 def main():
 
@@ -242,8 +244,8 @@ def main():
         re.IGNORECASE,
     )
 
+    load("contacts")
     while True:
-
         # waiting for nonempty input
         while True:
             inp = input(">>> ").strip()
@@ -275,7 +277,7 @@ def main():
                 if params[1] is not None
                 and isinstance(params[1], str)
                 and params[1].isdigit()
-                else 10
+                else 100
             )
             if params[0] == "show all":
                 entry = contacts
@@ -290,9 +292,6 @@ def main():
         print(response)
         if response == "Good bye!":
             return
-
-
-contacts = AddressBook()  # Global variable for storing contacts
 
 
 # ================================ main programm ============================ #
