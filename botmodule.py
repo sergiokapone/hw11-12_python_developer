@@ -101,22 +101,21 @@ class Record:
     def change_phone(self, old_phone: Phone, new_phone: Phone) -> bool:
         """Метод змінює об'єкт телефон в записі на новий."""
 
-        if old_phone.value in self.phones:
-            idx = self.phones.index(old_phone)
-            self.phones[idx] = new_phone
-            return True
-        return False
+        for phone in self.phones:
+            if phone == old_phone:
+                self.phones.remove(phone)
+                self.phones.append(new_phone)
+                return True
+            return False
 
     def show_phones(self):
 
-        phones = ", ".join(
-            phone.value for phone in self.phones
-        ) or '-'
+        phones = ", ".join(phone.value for phone in self.phones) or "-"
         return phones
 
     def show_birthday(self):
 
-        birthday = getattr(self.birthday, "value", None) or '-'
+        birthday = getattr(self.birthday, "value", None) or "-"
         return birthday
 
     def days_to_birthday(self) -> int:
@@ -175,7 +174,7 @@ class AddressBook(UserDict):
 
         data_items = list(self.data.items())
         for i in range(0, len(data_items), n):
-            data_slice = dict(data_items[i : i + n])
+            data_slice = dict(data_items[i: i + n])
             yield data_slice
             if i + n < len(data_items):
                 yield "continue"
