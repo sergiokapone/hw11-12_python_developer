@@ -138,19 +138,18 @@ def birthday(*args):
     if not args[0]:
         raise KeyError
 
-    name = Name(args[0])
+    contacts.show_birthday(Name(args[0]))
 
-    birthday = Record(name).birthday
+    days_to_next_birthday = contacts.data[args[0]].days_to_birthday()
+    birthday = contacts.show_birthday(Name(args[0]))
 
-    if birthday:
+    print(days_to_next_birthday)
 
-        days_to_next_birthday = Record(name).days_to_birthday()
+    table.add_row([args[0], birthday, days_to_next_birthday])
 
-        table.add_row([name.value, birthday.value, days_to_next_birthday])
+    return table
 
-        return table
-
-    return "No such contach founded"
+    # return "No such contach founded"
 
 
 def search(*args):
