@@ -62,7 +62,9 @@ class Birthday(Field):
 
     @Field.value.setter
     def value(self, value):
-        if not datetime.strptime(value, '%dd.%mm.%YYYY'):
+        if not datetime.strptime(value, "%d.%m.%Y") and not re.match(
+            r"^\d{2}\.\d{2}\.\d{4}$", value
+        ):
             raise ValueError("Birthday should be in format DD.MM.YYYY")
         self.__value = value
 
