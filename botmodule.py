@@ -1,7 +1,7 @@
 import re
 from collections import UserDict
 
-import json
+import pickle
 from datetime import datetime
 
 
@@ -25,17 +25,14 @@ class Field:
 
     def __init__(self, value: str):
         self.__value = value
+        self.value = value
 
     @property
     def value(self):
         return self.__value
 
-    @value.setter
-    def value(self, value):
-        self.__value = value
-
-    def __repr__(self):
-        return f"{self.value}"
+    def is_valid(self, value):
+        return True
 
     def __eq__(self, other):
         return self.value == other.value
@@ -44,7 +41,9 @@ class Field:
 class Name(Field):
     """Клас --- обов'язкове поле з ім'ям."""
 
-    pass
+    @Field.value.setter
+    def value(self, value):
+        self.__value = value
 
 
 class Phone(Field):
@@ -53,7 +52,7 @@ class Phone(Field):
 
     @Field.value.setter
     def value(self, value):
-        if not re.match(r"^\d{10}$", value):
+        if not re.match(r"\d{10}", value):
             raise ValueError("Phone number must be 10 digits")
         self.__value = value
 
@@ -63,7 +62,7 @@ class Birthday(Field):
 
     @Field.value.setter
     def value(self, value):
-        if value is not None and not re.match(r"^\d{2}\.\d{2}\.\d{4}$", value):
+        if not re.match(r"^\d{2}\.\d{2}\.\d{4}$", value):
             raise ValueError("Birthday should be in format DD.MM.YYYY")
         self.__value = value
 
@@ -72,16 +71,6 @@ class Record:
     """Клас відповідає за логіку додавання/видалення/редагування
     необов'язкових полів та зберігання обов'язкового поля Name."""
 
-    # Забороняємо створювати кілька об'єктів з однаковиси полями Name
-    # Для цього змінюємо метод __new__
-
-    records = {}
-
-    def __new__(cls, name: Name, *args, **kwargs):
-        if name.value in cls.records:
-            return cls.records[name.value]
-        return super().__new__(cls)
-
     def __init__(
         self,
         name: Name,
@@ -89,15 +78,9 @@ class Record:
         birthday: Birthday = None,
     ):
 
-        # якщо об'єкт було створено, то припинити роботу конструктора
-        if name.value in self.records:
-            return
-        # інакше запустити конструктор
         self.name = name  # Name --- атрибут ля зберігання об'єкту Name
         self.phones = phones or []
         self.birthday = birthday
-        # Додаємо в словник об'єктів новий об'єкт
-        self.records[name.value] = self
 
     def add_birthday(self, birthday: Birthday):
         """Метод додає об'єкт день народження до запису."""
@@ -147,32 +130,27 @@ class AddressBook(UserDict):
 
         self.data[record.name.value] = record
 
-    def save_contacts(self, filename):
-        """Метод зберігає записи до в json файл."""
+    def show_phones(self, name: Name):
 
-        with open(f"{filename}.json", "w") as f:
-            contacts = {}
-            for name, record in self.data.items():
-                phones = [phone.value for phone in record.phones]
-                birthday = record.birthday.value if record.birthday else None
-                if birthday:
-                    contacts[name] = {"phones": phones, "birthday": birthday}
-                else:
-                    contacts[name] = {"phones": phones}
-            json.dump(contacts, f, ensure_ascii=False, indent=4)
+        phones = ", ".join(
+            phone.value for phone in self.data[name.value].phones
+        )
+        return phones
+
+    def show_birthday(self, name: Name):
+
+        birthday = getattr(self.data[name.value].birthday, "value", None)
+        return birthday
+
+    def save_contacts(self, filename):
+        with open(filename, "wb") as file:
+            pickle.dump(list(self.data.items()), file)
 
     def load_contacts(self, filename):
-        """Метод завантажує записи з json в змінну-екземпляр класу."""
-
-        with open(f"{filename}.json", "r") as f:
-            data = json.load(f)
-
-        for name, info in data.items():
-            phones = [Phone(phone) for phone in info["phones"]]
-            birthday = Birthday(info.get("birthday"))
-            self.data[name] = Record(
-                Name(name), phones=phones, birthday=birthday
-            )
+        with open(filename, "rb") as file:
+            data = pickle.load(file)
+            self.clear()
+            self.update(data)
 
     def search(self, search_string):
         """Метод шукає записи  по ключовому слову."""
@@ -183,7 +161,7 @@ class AddressBook(UserDict):
             if (
                 search_string in record.name.value
                 or (
-                    record.birthday.value is not None
+                    getattr(record.birthday, "value", False)
                     and search_string in record.birthday.value
                 )
                 or any(search_string in phone.value for phone in record.phones)

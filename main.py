@@ -10,19 +10,12 @@ def build_table(data):
     table = PrettyTable()
     table.field_names = ["Name", "Birthday", "Phones"]
     table.min_width.update({"Name": 20, "Birthday": 12, "Phones": 40})
+    data = AddressBook(data)
     for key in data:
         record = data[key]
         name = record.name.value
-        birthday = (
-            record.birthday.value
-            if record.birthday is not None and record.birthday.value
-            else "-"
-        )
-        phones = (
-            ", ".join(phone.value for phone in record.phones)
-            if record.phones
-            else "-"
-        )
+        birthday = data.show_birthday(Name(key)) or "-"
+        phones = data.show_phones(Name(key)) or "-"
         table.add_row([name, birthday, phones])
     return table
 
@@ -88,35 +81,29 @@ def load(*args):
 def set_birthday(*args):
     """Функція-handler додає день народження до контакту."""
 
-    if not args[0]:
-        raise KeyError
+    name, birthday = Name(args[0]), Birthday(args[1])
 
-    if not args[1]:
-        raise ValueError("Birthday should be in format DD.MM.YYYY")
-
-    name = Name(args[0])
-    birthday = Birthday(args[1])
-    record = Record(name)
+    if name.value in contacts.data:
+        record = contacts.data[name.value]
+    else:
+        record = Record(name)
+        contacts.add_record(record)
     record.add_birthday(birthday)
-    contacts.add_record(record)
 
     return f"I added a birthday {args[1]} to contact {args[0]}"
 
 
 @input_error
 def add(*args):
-    """Функція-handler додає телефон до контакту."""
-
-    if not args[0]:
-        raise KeyError
-
-    if not args[1]:
-        raise ValueError("The phone number must be 10 digits")
-
+    """Добавляет телефонный номер в контакт по имени."""
     name, phone = Name(args[0]), Phone(args[1])
-    record = Record(name)
+
+    if name.value in contacts.data:
+        record = contacts.data[name.value]
+    else:
+        record = Record(name)
+        contacts.add_record(record)
     record.add_phone(phone)
-    contacts.add_record(record)
 
     return f"I added a phone {args[1]} to contact {args[0]}"
 
@@ -132,10 +119,8 @@ def phones(*args):
     if not args[0]:
         raise KeyError
 
-    name = Name(args[0])
-    phones = Record(name).phones
-    phones = ", ".join(phone.value for phone in phones)
-    table.add_row([name.value, phones])
+    phones = contacts.show_phones(Name(args[0]))
+    table.add_row([args[0], phones])
 
     return table
 
