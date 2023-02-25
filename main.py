@@ -119,7 +119,7 @@ def phones(*args):
     if not args[0]:
         raise KeyError
 
-    phones = contacts.show_phones(Name(args[0]))
+    phones = contacts.show_phones(Name(args[0])) or '-'
     table.add_row([args[0], phones])
 
     return table
@@ -140,10 +140,8 @@ def birthday(*args):
 
     contacts.show_birthday(Name(args[0]))
 
-    days_to_next_birthday = contacts.data[args[0]].days_to_birthday()
-    birthday = contacts.show_birthday(Name(args[0]))
-
-    print(days_to_next_birthday)
+    days_to_next_birthday = contacts.data[args[0]].days_to_birthday() or '-'
+    birthday = contacts.show_birthday(Name(args[0])) or '-'
 
     table.add_row([args[0], birthday, days_to_next_birthday])
 
