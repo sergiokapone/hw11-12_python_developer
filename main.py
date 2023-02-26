@@ -120,12 +120,12 @@ def add(*args):
 def phones(*args):
     """Функція-handler показує телефонні номери відповідного контакту."""
 
+    if not args[0]:
+        raise KeyError("Give me a name, please")
+
     table = PrettyTable()
     table.field_names = ["Name", "Phones"]
     table.min_width.update({"Name": 20, "Phones": 55})
-
-    if not args[0]:
-        raise KeyError
 
     phones = contacts.show_phones(Name(args[0])) or "-"
     table.add_row([args[0], phones])
