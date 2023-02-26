@@ -27,19 +27,20 @@ def input_error(func):
     def wrapper(*func_args, **func_kwargs):
         try:
             return func(*func_args, **func_kwargs)
-        except KeyError:
-            return "Give me a name, please"
+        except KeyError as error:
+            if "name" in str(error):
+                return "\033[31mGive me a name, please\033[0m"
         except ValueError as error:
             if "phone" in str(error):
-                return "Phone number must be 10 digits"
+                return "\033[31mPhone number must be 10 digits\033[0m"
             elif "Birthday" in str(error):
-                return "Birthday should be in format DD.MM.YYYY and be a valid date"
+                return "\033[31mBirthday should be in format DD.MM.YYYY and be a valid date\033[0m"
             else:
                 return str(error)
         except TypeError as error:
             return str(error)
         except FileNotFoundError:
-            return "File not found"
+            return "\033[31mFile not found\033[31m"
 
     return wrapper
 
@@ -48,21 +49,21 @@ def input_error(func):
 
 
 def hello(*args):
-    return "How can I help you?"
+    return "\033[32mHow can I help you?\033[0m"
 
 
 def good_bye(*args):
     contacts.save_contacts("contacts")
-    return "Good bye!"
+    return "\033[32mGood bye!\033[0m"
 
 
 def undefined(*args):
-    return "What do you mean?"
+    return "\033[32mWhat do you mean?\033[0m"
 
 
 def show_all(*args):
     """Функция-handler показує книгу контактів."""
-    return f"Address book contain {len(contacts)} contacts"
+    return f"\033[32mAddress book contain {len(contacts)} contacts\033[0m"
 
 
 @input_error
@@ -81,6 +82,9 @@ def load(*args):
 def set_birthday(*args):
     """Функція-handler додає день народження до контакту."""
 
+    if not args[0]:
+        raise KeyError("Give me a name, please")
+
     name, birthday = Name(args[0]), Birthday(args[1])
 
     if name.value in contacts.data:
@@ -96,6 +100,10 @@ def set_birthday(*args):
 @input_error
 def add(*args):
     """Добавляет телефонный номер в контакт по имени."""
+
+    if not args[0]:
+        raise KeyError("Give me a name, please")
+
     name, phone = Name(args[0]), Phone(args[1])
 
     if name.value in contacts.data:
@@ -125,9 +133,12 @@ def phones(*args):
     return table
 
 
-# @input_error
+@input_error
 def birthday(*args):
     """Функція-handler показує день народження та кількість днів до наступного."""
+
+    if not args[0]:
+        raise KeyError("Give me a name, please")
 
     table = PrettyTable()
     table.field_names = ["Name", "Birthday", "Days to next Birthday"]
@@ -135,13 +146,8 @@ def birthday(*args):
         {"Name": 20, "Birthday": 12, "Days to next Birthday": 40}
     )
 
-    if not args[0]:
-        raise KeyError
-
-    contacts.show_birthday(Name(args[0]))
-
     days_to_next_birthday = contacts.data[args[0]].days_to_birthday() or "-"
-    birthday = contacts.show_birthday(Name(args[0])) or "-"
+    birthday = contacts.get(args[0]).show_birthday() or "-"
 
     table.add_row([args[0], birthday, days_to_next_birthday])
 
