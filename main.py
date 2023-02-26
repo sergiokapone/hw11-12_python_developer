@@ -26,10 +26,9 @@ def build_table(data):
 def input_error(func):
     def wrapper(*func_args, **func_kwargs):
         try:
-            return func(*func_args, **func_kwargs)
+            func(*func_args, **func_kwargs)
         except KeyError as error:
-            if "name" in str(error):
-                return "\033[31mGive me a name, please\033[0m"
+            return f"\033[31m{str(error)}\033[0m"
         except ValueError as error:
             return f'\033[31m{str(error)}\033[0m'
         except TypeError as error:
@@ -99,7 +98,7 @@ def add(*args):
     """Добавляет телефонный номер в контакт по имени."""
 
     if not args[0]:
-        raise KeyError("Give me a name, please")
+        raise KeyError("Give me a name, please!")
 
     if not args[1]:
         raise ValueError("Give me a phone, please")
