@@ -31,9 +31,9 @@ def input_error(func):
             if "name" in str(error):
                 return "\033[31mGive me a name, please\033[0m"
         except ValueError as error:
-            return str(error)
+            return f'\033[31m{str(error)}\033[0m'
         except TypeError as error:
-            return str(error)
+            return f'\033[31m{str(error)}\033[0m'
         except FileNotFoundError:
             return "\033[31mFile not found\033[31m"
 
@@ -79,6 +79,8 @@ def set_birthday(*args):
 
     if not args[0]:
         raise KeyError("Give me a name, please")
+    if not args[1]:
+        raise ValueError("Give me a date, please")
 
     name, birthday = Name(args[0]), Birthday(args[1])
 
@@ -98,6 +100,9 @@ def add(*args):
 
     if not args[0]:
         raise KeyError("Give me a name, please")
+
+    if not args[1]:
+        raise ValueError("Give me a phone, please")
 
     name, phone = Name(args[0]), Phone(args[1])
 
