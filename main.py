@@ -28,13 +28,13 @@ def input_error(func):
         try:
             return func(*func_args, **func_kwargs)
         except KeyError as error:
-            return "\033[31m{}\033[0m".format(str(error).strip("'"))
+            return "\033[1;31m{}\033[0m".format(str(error).strip("'"))
         except ValueError as error:
-            return f"\033[31m{str(error)}\033[0m"
+            return f"\033[1;31m{str(error)}\033[0m"
         except TypeError as error:
-            return f"\033[31m{str(error)}\033[0m"
+            return f"\033[1;31m{str(error)}\033[0m"
         except FileNotFoundError:
-            return "\033[31mFile not found\033[0m"
+            return "\033[1;31mFile not found\033[0m"
 
     return wrapper
 
@@ -294,7 +294,7 @@ def main():
                 else:
                     print(build_table(tab))
 
-        print(response)
+        print(f'\033[1;32m{response}\033[0m')
         if response == "Good bye!":
             return
 
