@@ -158,8 +158,6 @@ def birthday(*args):
 
     return f'\033[0m{table}'
 
-    # return "No such contach founded"
-
 
 @input_error
 def search(*args):
@@ -259,7 +257,7 @@ def main():
     pattern = re.compile(
         r"\b(\.|" + command_pattern + r")\b"
         r"(?:\s+([a-zA-Z0-9\.]+))?"
-        r"(?:\s+(\d+|\d{1,2}\.\d{1,2}\.\d{4}(?:\.\d{2})?))?"
+        r"(?:\s+(\d{3,}|\d{1,2}\.\d{1,2}\.\d{4})?)?"
         r"(?:\s+(\d+)?)?",
         re.IGNORECASE,
     )

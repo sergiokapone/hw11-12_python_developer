@@ -49,7 +49,7 @@ class Phone(Field):
 
     @Field.value.setter
     def value(self, value):
-        if not bool(re.match(r"\d{10}", value)):
+        if not bool(re.match(r"\d{10}", value)) or len(value) > 10:
             raise ValueError("Phone number must be 10 digits")
         self.__value = value
 
