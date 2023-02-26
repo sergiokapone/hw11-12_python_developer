@@ -26,15 +26,15 @@ def build_table(data):
 def input_error(func):
     def wrapper(*func_args, **func_kwargs):
         try:
-            func(*func_args, **func_kwargs)
+            return func(*func_args, **func_kwargs)
         except KeyError as error:
-            return "\033[31m{}\033[0m".format(str(error).strip('\''))
+            return "\033[31m{}\033[0m".format(str(error).strip("'"))
         except ValueError as error:
-            return f'\033[31m{str(error)}\033[0m'
+            return f"\033[31m{str(error)}\033[0m"
         except TypeError as error:
-            return f'\033[31m{str(error)}\033[0m'
+            return f"\033[31m{str(error)}\033[0m"
         except FileNotFoundError:
-            return '\033[31mFile not found\033[0m'
+            return "\033[31mFile not found\033[0m"
 
     return wrapper
 
@@ -126,7 +126,7 @@ def phones(*args):
     table.field_names = ["Name", "Phones"]
     table.min_width.update({"Name": 20, "Phones": 55})
 
-    phones = contacts.show_phones(Name(args[0])) or "-"
+    phones = contacts.get(args[0]).show_phones() or "-"
     table.add_row([args[0], phones])
 
     return table
@@ -286,7 +286,7 @@ def main():
             )
             if params[0] == "show all":
                 entry = contacts
-            elif params[0] == "search":
+            elif params[0] == "search" and params[0] is not None:
                 entry = contacts.search(params[1])
             for tab in entry.iterator(param):
                 if tab == "continue":
