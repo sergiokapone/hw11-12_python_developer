@@ -48,7 +48,7 @@ def hello(*args):
 
 def good_bye(*args):
     contacts.save_contacts("contacts")
-    return "\033[32mGood bye!\033[0m"
+    return "Good bye!"
 
 
 def undefined(*args):
