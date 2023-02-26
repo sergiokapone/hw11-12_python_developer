@@ -76,7 +76,7 @@ def load(*args):
 def set_birthday(*args):
     """Функція-handler додає день народження до контакту."""
 
-    if not args[0]:
+    if not args[0] or args[0].isdigit():
         raise KeyError("Give me a name, please")
     if not args[1]:
         raise ValueError("Give me a date, please")
@@ -257,7 +257,7 @@ def main():
     pattern = re.compile(
         r"\b(\.|" + command_pattern + r")\b"
         r"(?:\s+([a-zA-Z0-9\.]+))?"
-        r"(?:\s+(\d{3,}|\d{1,2}\.\d{1,2}\.\d{4})?)?"
+        r"(?:\s+(\d{1,2}\.\d{1,2}\.\d{4}|\d{1,})?)?"
         r"(?:\s+(\d+)?)?",
         re.IGNORECASE,
     )
