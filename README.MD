@@ -42,5 +42,6 @@ COMMANDS = {
     "save": save,
     "load": load,
     "search": search,
+    "export": export_to_csv,
 }
 ```
