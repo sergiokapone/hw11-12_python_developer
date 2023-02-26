@@ -118,6 +118,9 @@ class Record:
         birthday = getattr(self.birthday, "value", None) or "-"
         return birthday
 
+        name = getattr(self.name, "value", False)
+        return name
+
     def days_to_birthday(self) -> int:
         """Метод повертає кількість днів до наступного дня народження контакту."""
 
@@ -174,7 +177,7 @@ class AddressBook(UserDict):
 
         data_items = list(self.data.items())
         for i in range(0, len(data_items), n):
-            data_slice = dict(data_items[i: i + n])
+            data_slice = dict(data_items[i : i + n])
             yield data_slice
             if i + n < len(data_items):
                 yield "continue"

@@ -122,6 +122,9 @@ def phones(*args):
     if not args[0]:
         raise KeyError("Give me a name, please")
 
+    if args[0] not in contacts.keys():
+        raise ValueError("Contact does not in AddressBook")
+
     table = PrettyTable()
     table.field_names = ["Name", "Phones"]
     table.min_width.update({"Name": 20, "Phones": 55})
@@ -129,7 +132,7 @@ def phones(*args):
     phones = contacts.get(args[0]).show_phones() or "-"
     table.add_row([args[0], phones])
 
-    return table
+    return f'\033[0m{table}'
 
 
 @input_error
@@ -145,12 +148,15 @@ def birthday(*args):
         {"Name": 20, "Birthday": 12, "Days to next Birthday": 40}
     )
 
+    if args[0] not in contacts.keys():
+        raise ValueError("Contact does not in AddressBook")
+
     days_to_next_birthday = contacts.data[args[0]].days_to_birthday() or "-"
     birthday = contacts.get(args[0]).show_birthday() or "-"
 
     table.add_row([args[0], birthday, days_to_next_birthday])
 
-    return table
+    return f'\033[0m{table}'
 
     # return "No such contach founded"
 
