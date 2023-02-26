@@ -132,7 +132,7 @@ def phones(*args):
     phones = contacts.get(args[0]).show_phones() or "-"
     table.add_row([args[0], phones])
 
-    return f'\033[0m{table}'
+    return f"\033[0m{table}"
 
 
 @input_error
@@ -156,7 +156,7 @@ def birthday(*args):
 
     table.add_row([args[0], birthday, days_to_next_birthday])
 
-    return f'\033[0m{table}'
+    return f"\033[0m{table}"
 
 
 @input_error
@@ -168,8 +168,8 @@ def search(*args):
     results = contacts.search(args[0])
 
     if results:
-        return f'\033[0m{build_table(results)}'
-    return 'By your request found nothing'
+        return f"\033[0m{build_table(results)}"
+    return "By your request found nothing"
 
 
 @input_error
@@ -217,6 +217,11 @@ def change(*args):
     return f"Contact {name.value} with phone number {old_phone.value} was updated with new phone number {new_phone.value}"
 
 
+def export_to_csv(*args):
+    contacts.export_to_csv(args[0])
+    return f"File {args[0]} exported to csv"
+
+
 # =============================== handler loader =============================#
 
 COMMANDS = {
@@ -234,6 +239,7 @@ COMMANDS = {
     "save": save,
     "load": load,
     "search": search,
+    "export": export_to_csv,
 }
 
 

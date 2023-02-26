@@ -2,6 +2,7 @@ import re
 from collections import UserDict
 
 import pickle
+import csv
 from datetime import datetime
 
 
@@ -171,6 +172,24 @@ class AddressBook(UserDict):
             ):
                 results.add_record(record)
         return results
+
+    def export_to_csv(self, filename):
+        """Експорт записів із AddressBook в CSV-файл"""
+
+        with open(filename, "w", newline="") as csvfile:
+            fieldnames = ["name", "birthday", "phones"]
+            writer = csv.DictWriter(
+                csvfile, fieldnames=fieldnames, delimiter="|"
+            )
+            writer.writeheader()
+            for record in self.data.values():
+                writer.writerow(
+                    {
+                        "name": record.name.value,
+                        "phones": record.show_phones(),
+                        "birthday": record.show_birthday(),
+                    }
+                )
 
     def iterator(self, n: int = 10):
         """Метод ітерується по записам і виводить їх частинами по n-штук."""
