@@ -155,8 +155,17 @@ def birthday(*args):
     # return "No such contach founded"
 
 
+@input_error
 def search(*args):
-    return "Here are the found contacts"
+
+    if not args[0]:
+        raise KeyError("Give me a some string, please")
+
+    results = contacts.search(args[0])
+
+    if results:
+        return f'\033[0m{build_table(results)}'
+    return 'By your request found nothing'
 
 
 @input_error
@@ -276,7 +285,7 @@ def main():
         if inp.strip() == ".":
             contacts.save_contacts("contacts")
             return
-        if params[0] in ("show all", "search"):
+        if params[0] == "show all":
             param = (
                 int(params[1])
                 if params[1] is not None
@@ -284,17 +293,13 @@ def main():
                 and params[1].isdigit()
                 else 100
             )
-            if params[0] == "show all":
-                entry = contacts
-            elif params[0] == "search" and params[0] is not None:
-                entry = contacts.search(params[1])
-            for tab in entry.iterator(param):
+            for tab in contacts.iterator(param):
                 if tab == "continue":
                     input("Press <Enter> to continue...")
                 else:
                     print(build_table(tab))
 
-        print(f'\033[1;32m{response}\033[0m')
+        print(f"\033[1;32m{response}\033[0m")
         if response == "Good bye!":
             return
 

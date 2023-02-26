@@ -155,9 +155,6 @@ class AddressBook(UserDict):
     def search(self, search_string):
         """Метод шукає записи  по ключовому слову."""
 
-        if not search_string:
-            search_string = ''
-
         results = AddressBook()
         for key in self.data:
             record = self.data[key]
@@ -172,7 +169,7 @@ class AddressBook(UserDict):
                 results.add_record(record)
         return results
 
-    def iterator(self, n: int):
+    def iterator(self, n: int = 10):
         """Метод ітерується по записам і виводить їх частинами по n-штук."""
 
         data_items = list(self.data.items())
