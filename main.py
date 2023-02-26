@@ -31,12 +31,7 @@ def input_error(func):
             if "name" in str(error):
                 return "\033[31mGive me a name, please\033[0m"
         except ValueError as error:
-            if "phone" in str(error):
-                return "\033[31mPhone number must be 10 digits\033[0m"
-            elif "Birthday" in str(error):
-                return "\033[31mBirthday should be in format DD.MM.YYYY and be a valid date\033[0m"
-            else:
-                return str(error)
+            return str(error)
         except TypeError as error:
             return str(error)
         except FileNotFoundError:
@@ -245,8 +240,8 @@ def main():
     pattern = re.compile(
         r"\b(\.|" + command_pattern + r")\b"
         r"(?:\s+([a-zA-Z0-9\.]+))?"
-        r"(?:\s+(\d{10}|\d{1,2}\.\d{1,2}\.\d{4}(?:\.\d{2})?))?"
-        r"(?:\s+(\d{10})?)?",
+        r"(?:\s+(\d+|\d{1,2}\.\d{1,2}\.\d{4}(?:\.\d{2})?))?"
+        r"(?:\s+(\d+)?)?",
         re.IGNORECASE,
     )
 
