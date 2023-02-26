@@ -50,7 +50,7 @@ class Phone(Field):
     @Field.value.setter
     def value(self, value):
         if not bool(re.match(r"\d{10}", value)):
-            raise ValueError("\033[31mPhone number must be 10 digits\033[0m")
+            raise ValueError("Phone number must be 10 digits")
         self.__value = value
 
 
@@ -62,7 +62,7 @@ class Birthday(Field):
         try:
             date = datetime.strptime(value, "%d.%m.%Y")
         except (TypeError, ValueError):
-            raise ValueError("\033[31mInvalid date format. Please use DD.MM.YYYY\033[0m")
+            raise ValueError("Invalid date format. Please use DD.MM.YYYY")
         if date > datetime.today():
             raise ValueError("Date cannot be in the future")
         self.__value = date

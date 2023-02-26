@@ -28,13 +28,13 @@ def input_error(func):
         try:
             func(*func_args, **func_kwargs)
         except KeyError as error:
-            return f"\033[31m{str(error)}\033[0m"
+            return "\033[31m{}\033[0m".format(str(error).strip('\''))
         except ValueError as error:
             return f'\033[31m{str(error)}\033[0m'
         except TypeError as error:
             return f'\033[31m{str(error)}\033[0m'
         except FileNotFoundError:
-            return "\033[31mFile not found\033[31m"
+            return '\033[31mFile not found\033[0m'
 
     return wrapper
 
@@ -57,7 +57,7 @@ def undefined(*args):
 
 def show_all(*args):
     """Функция-handler показує книгу контактів."""
-    return f"\033[32mAddress book contain {len(contacts)} contacts\033[0m"
+    return f"Address book contain {len(contacts)} contacts"
 
 
 @input_error
@@ -98,7 +98,7 @@ def add(*args):
     """Добавляет телефонный номер в контакт по имени."""
 
     if not args[0]:
-        raise KeyError("Give me a name, please!")
+        raise KeyError("Give me a name, please")
 
     if not args[1]:
         raise ValueError("Give me a phone, please")
@@ -164,7 +164,7 @@ def remove(*args):
     """Функція-handler видаляє запис з книги."""
 
     if not args[0]:
-        raise KeyError
+        raise KeyError("Give me a name, please")
 
     name = Name(args[0])
 
@@ -178,7 +178,7 @@ def change(*args):
     """Функція-handler змінює телефон контакту."""
 
     if not args[0]:
-        raise KeyError
+        raise KeyError("Give me a name, please")
 
     if not args[1]:
         raise ValueError("Old phone number is required")
