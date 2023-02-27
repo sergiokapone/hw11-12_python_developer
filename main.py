@@ -220,7 +220,7 @@ def change(*args):
 @input_error
 def export_to_csv(*args):
     if not args[0]:
-        raise TypeError('Set file name, please')
+        raise TypeError("Set file name, please")
     contacts.export_to_csv(args[0])
     return f"File {args[0]} exported to csv"
 
@@ -231,9 +231,23 @@ def import_from_csv(*args):
     return f"File {args[0]} imported from csv"
 
 
+def help_commands(*args):
+    """Функція показує перелік всіх команд."""
+
+    table = PrettyTable()
+    table.field_names = ["Command"]
+    table.min_width.update({"Command": 20})
+
+    for command in COMMANDS.keys():
+        table.add_row([command])
+
+    return f"\033[0m{table}"
+
+
 # =============================== handler loader =============================#
 
 COMMANDS = {
+    "help": help_commands,
     "hello": hello,
     "set birthday": set_birthday,
     "birthday of": birthday,
