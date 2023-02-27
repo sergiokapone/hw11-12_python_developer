@@ -217,11 +217,15 @@ def change(*args):
     return f"Contact {name.value} with phone number {old_phone.value} was updated with new phone number {new_phone.value}"
 
 
+@input_error
 def export_to_csv(*args):
+    if not args[0]:
+        raise TypeError('Set file name, please')
     contacts.export_to_csv(args[0])
     return f"File {args[0]} exported to csv"
 
 
+@input_error
 def import_from_csv(*args):
     contacts.import_from_csv(args[0])
     return f"File {args[0]} imported from csv"
