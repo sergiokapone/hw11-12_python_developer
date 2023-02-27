@@ -24,6 +24,7 @@
 - `load` --- завантажує книгу з контактами з файлу в чат, наприклад `load contacts`.
 - `search` -- здійснює пошук за ключовою фразою, частиною номеру телефона чи дні народження, наприклад `search 123`, або `search Beth`.
 - `export` -- Експортує дані в формат `csv`, приклад `export somefile`.
+- `import` -- Імпортує дані з формату `csv`, приклад `impott somefile`.
 
 
 ```
@@ -43,5 +44,6 @@ COMMANDS = {
     "load": load,
     "search": search,
     "export": export_to_csv,
+    "import": import_from_csv,
 }
 ```

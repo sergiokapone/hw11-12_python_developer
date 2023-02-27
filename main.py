@@ -222,6 +222,11 @@ def export_to_csv(*args):
     return f"File {args[0]} exported to csv"
 
 
+def import_from_csv(*args):
+    contacts.import_from_csv(args[0])
+    return f"File {args[0]} imported from csv"
+
+
 # =============================== handler loader =============================#
 
 COMMANDS = {
@@ -240,6 +245,7 @@ COMMANDS = {
     "load": load,
     "search": search,
     "export": export_to_csv,
+    "import": import_from_csv,
 }
 
 

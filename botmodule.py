@@ -191,6 +191,28 @@ class AddressBook(UserDict):
                     }
                 )
 
+    def import_from_csv(self, filename):
+        """Імпорт записів із CSV-файлу в AddressBook"""
+
+        with open(filename, newline="") as csvfile:
+            reader = csv.DictReader(csvfile, delimiter="|")
+            for row in reader:
+                name = row["name"]
+                phones = [
+                    Phone(phone.strip())
+                    for phone in row["phones"].split(",")
+                    if phone.strip() and row["phones"] != "-"
+                ]
+                birthday = (
+                    Birthday(row["birthday"])
+                    if row["birthday"] != "-"
+                    else None
+                )
+                record = Record(
+                    name=Name(name), phones=phones, birthday=birthday
+                )
+                self.add_record(record)
+
     def iterator(self, n: int = 10):
         """Метод ітерується по записам і виводить їх частинами по n-штук."""
 
