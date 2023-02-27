@@ -329,7 +329,7 @@ def main():
             )
             for tab in contacts.iterator(param):
                 if tab == "continue":
-                    input("Press <Enter> to continue...")
+                    input("\033[1;32mPress <Enter> to continue...\033[0m")
                 else:
                     print(build_table(tab))
 
