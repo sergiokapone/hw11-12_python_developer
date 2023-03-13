@@ -144,9 +144,7 @@ def birthday(*args):
 
     table = PrettyTable()
     table.field_names = ["Name", "Birthday", "Days to next Birthday"]
-    table.min_width.update(
-        {"Name": 20, "Birthday": 12, "Days to next Birthday": 40}
-    )
+    table.min_width.update({"Name": 20, "Birthday": 12, "Days to next Birthday": 40})
 
     if args[0] not in contacts.keys():
         raise ValueError("Contact does not in AddressBook")
@@ -238,7 +236,7 @@ def help_commands(*args):
     table.field_names = ["Command"]
     table.min_width.update({"Command": 20})
 
-    for command in COMMANDS.keys():
+    for command in COMMANDS:
         table.add_row([command])
 
     return f"\033[0m{table}"

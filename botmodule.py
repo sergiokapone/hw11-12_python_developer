@@ -218,7 +218,7 @@ class AddressBook(UserDict):
 
         data_items = list(self.data.items())
         for i in range(0, len(data_items), n):
-            data_slice = dict(data_items[i : i + n])
+            data_slice = dict(data_items[i: i + n])
             yield data_slice
             if i + n < len(data_items):
                 yield "continue"
